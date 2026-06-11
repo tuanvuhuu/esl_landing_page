@@ -38,8 +38,8 @@ function PhoneIcon() {
 
 function ZaloIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22">
-      <text x="3" y="18" fontFamily="Quicksand, sans-serif" fontWeight="700" fontSize="14" fill="#fff">Zalo</text>
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+      <path d="M12 2C6.48 2 2 5.8 2 10.5c0 2.8 1.6 5.3 4 6.8-.2.7-.6 2.3-.6 2.3s1.9-1 2.8-1.4c1.2.3 2.5.4 3.8.4 5.52 0 10-3.8 10-8.5S17.52 2 12 2zm2.1 12.6H9.4v-1.1l3.1-3.9H9.4V8.5h4.7v1.1l-3.1 3.9h3.1v1.1z" fill="#fff"/>
     </svg>
   );
 }

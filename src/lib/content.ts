@@ -61,7 +61,7 @@ export const defaultContent: SiteContent = {
   stats: [
     { num: "2.000+", lbl: "Học viên" },
     { num: "8 năm", lbl: "Kinh nghiệm" },
-    { num: "98%", lbl: "Phụ huynh hài lòng" },
+    { num: "99%", lbl: "Phụ huynh hài lòng" },
     { num: "≤ 10", lbl: "Bé mỗi lớp" },
   ],
   programs: [

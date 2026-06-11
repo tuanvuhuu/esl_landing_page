@@ -133,7 +133,7 @@ const CERTS = [
   "🧩 Phương pháp Immersive",
   "👶 Lớp ≤ 10 bé",
   "🌏 Giáo viên bản ngữ",
-  "⭐ 98% phụ huynh hài lòng",
+  "⭐ 99% phụ huynh hài lòng",
 ];
 
 export default async function Home() {
@@ -259,11 +259,13 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="cert-marquee" aria-label="Chứng nhận và phương pháp">
-        <div className="cert-track">
-          {CERTS.concat(CERTS).map((label, i) => (
-            <span className="cert-pill" key={i}>{label}</span>
-          ))}
+      <div className="wrap">
+        <div className="cert-marquee" aria-label="Chứng nhận và phương pháp">
+          <div className="cert-track">
+            {CERTS.concat(CERTS).map((label, i) => (
+              <span className="cert-pill" key={i}>{label}</span>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -482,7 +484,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <WaveDivider color="#1b2a4a" />
+      <WaveDivider color="#fcfbfa" />
 
       <footer>
         {/* Upper: Logo + tagline */}
@@ -492,11 +494,29 @@ export default async function Home() {
               <img src="/logo.png" alt={c.centerName} style={{ background: "#fff", borderRadius: "50%", padding: 3 }} />
               <span className="wm">{c.centerName}<small>English as a Second Language</small></span>
             </span>
-            <p className="f-tagline">Chương trình tiếng Anh chuẩn quốc tế cho trẻ 3–15 tuổi.<br/>Nền tảng vững chắc — bé tự tin giao tiếp toàn cầu.</p>
+            <p className="f-tagline">Chương trình tiếng Anh chuẩn quốc tế cho trẻ 3–15 tuổi.<br />Nền tảng vững chắc — bé tự tin giao tiếp toàn cầu.</p>
             <div className="f-socials">
-              {c.contact.facebook && <a href={c.contact.facebook} target="_blank" rel="noreferrer" className="f-soc" aria-label="Facebook"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg></a>}
-              {c.contact.zalo && <a href={c.contact.zalo.startsWith("http") ? c.contact.zalo : `https://zalo.me/${c.contact.zalo.replace(/\s/g, "")}`} target="_blank" rel="noreferrer" className="f-soc" aria-label="Zalo">💬</a>}
-              {c.contact.messenger && <a href={c.contact.messenger} target="_blank" rel="noreferrer" className="f-soc" aria-label="Messenger">⚡</a>}
+              {c.contact.facebook && (
+                <a href={c.contact.facebook} target="_blank" rel="noreferrer" className="f-soc f-facebook" aria-label="Facebook">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z" />
+                  </svg>
+                </a>
+              )}
+              {c.contact.zalo && (
+                <a href={c.contact.zalo.startsWith("http") ? c.contact.zalo : `https://zalo.me/${c.contact.zalo.replace(/\s/g, "")}`} target="_blank" rel="noreferrer" className="f-soc f-zalo" aria-label="Zalo">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 5.8 2 10.5c0 2.8 1.6 5.3 4 6.8-.2.7-.6 2.3-.6 2.3s1.9-1 2.8-1.4c1.2.3 2.5.4 3.8.4 5.52 0 10-3.8 10-8.5S17.52 2 12 2zm2.1 12.6H9.4v-1.1l3.1-3.9H9.4V8.5h4.7v1.1l-3.1 3.9h3.1v1.1z" />
+                  </svg>
+                </a>
+              )}
+              {c.contact.messenger && (
+                <a href={c.contact.messenger} target="_blank" rel="noreferrer" className="f-soc f-messenger" aria-label="Messenger">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M12 2C6.5 2 2 6.1 2 11.2c0 2.9 1.4 5.5 3.7 7.2V22l3.4-1.9a11 11 0 0 0 2.9.4c5.5 0 10-4.1 10-9.2S17.5 2 12 2zm1.1 12.4-2.5-2.7L5.3 14.4l5.7-6.1 2.5 2.7 5.2-2.7z" />
+                  </svg>
+                </a>
+              )}
             </div>
           </div>
         </div>

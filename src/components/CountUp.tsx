@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Đếm số tăng dần khi cuộn tới. Giữ nguyên phần chữ xung quanh số
- * (VD "2.000+", "8 năm", "98%", "≤ 10").
+ * (VD "2.000+", "8 năm", "99%", "≤ 10").
  */
 export default function CountUp({ value, duration = 1400 }: { value: string; duration?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
