@@ -77,6 +77,9 @@ function AdminEditorInner({ initial, initialSite }: { initial: SiteContent; init
   const [events, setEvents] = useState<EventItem[]>([]);
   const [editingEvent, setEditingEvent] = useState<(Omit<EventItem, "id"> & { id?: number }) | null>(null);
   const [eventSaving, setEventSaving] = useState(false);
+  // Popup "Link quảng cáo" cho 1 sự kiện
+  const [linkEvent, setLinkEvent] = useState<EventItem | null>(null);
+  const [linkCampaign, setLinkCampaign] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
 
   // New feature states
@@ -240,6 +243,37 @@ function AdminEditorInner({ initial, initialSite }: { initial: SiteContent; init
     }, 30000);
     return () => clearInterval(interval);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Bỏ dấu tiếng Việt + tạo slug cho utm_campaign
+  function slugify(s: string): string {
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/đ/g, "d").replace(/Đ/g, "D")
+      .toLowerCase().trim()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  }
+
+  // Dựng link sự kiện kèm UTM theo kênh (dùng đúng domain đang mở)
+  function buildEventLink(ev: EventItem, source?: string, campaign?: string): string {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const base = `${origin}/su-kien/${ev.id}`;
+    if (!source) return base;
+    const camp = (campaign || "").trim() || `su-kien-${ev.id}`;
+    const params = new URLSearchParams({
+      utm_source: source,
+      utm_medium: "cpc",
+      utm_campaign: camp,
+    });
+    return `${base}?${params.toString()}`;
+  }
+
+  async function copyText(text: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(`📋 Đã copy link ${label}`, "success");
+    } catch {
+      toast("Trình duyệt chặn copy — hãy bôi đen link rồi copy thủ công", "error");
+    }
+  }
 
   async function loadEvents(site: string = activeSite) {
     try {
@@ -1220,6 +1254,48 @@ function AdminEditorInner({ initial, initialSite }: { initial: SiteContent; init
           </div>
         )}
 
+        {/* Popup link quảng cáo (kèm UTM) */}
+        {linkEvent && (
+          <div className="ev-modal" onClick={() => setLinkEvent(null)}>
+            <div className="ev-modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>🔗 Link chạy quảng cáo</h3>
+              <p className="muted" style={{ fontSize: "0.85rem", marginBottom: "0.8rem" }}>
+                Sự kiện: <strong>{linkEvent.title}</strong>. Bấm <strong>Copy</strong> ở kênh tương ứng — link đã gắn sẵn UTM để đo nguồn khách.
+              </p>
+              <div className="afield">
+                <label>Tên chiến dịch (utm_campaign)</label>
+                <input value={linkCampaign} onChange={(e) => setLinkCampaign(slugify(e.target.value))} placeholder={`su-kien-${linkEvent.id}`} />
+                <small style={{ color: "var(--muted)" }}>Chỉ chữ thường/số/gạch ngang. VD: khaigiang-t7</small>
+              </div>
+              <div className="link-copy-list">
+                {[
+                  { key: "facebook", label: "Facebook", emoji: "📘" },
+                  { key: "zalo", label: "Zalo", emoji: "💬" },
+                  { key: "tiktok", label: "TikTok", emoji: "🎵" },
+                  { key: "google", label: "Google", emoji: "🔍" },
+                ].map((ch) => {
+                  const link = buildEventLink(linkEvent, ch.key, linkCampaign);
+                  return (
+                    <div key={ch.key} className="link-copy-row">
+                      <span className="link-copy-name">{ch.emoji} {ch.label}</span>
+                      <input className="link-copy-input" readOnly value={link} onFocus={(e) => e.currentTarget.select()} />
+                      <button className="abtn abtn-primary" onClick={() => copyText(link, ch.label)}>Copy</button>
+                    </div>
+                  );
+                })}
+                <div className="link-copy-row">
+                  <span className="link-copy-name">🔗 Link gốc</span>
+                  <input className="link-copy-input" readOnly value={buildEventLink(linkEvent)} onFocus={(e) => e.currentTarget.select()} />
+                  <button className="abtn" onClick={() => copyText(buildEventLink(linkEvent), "gốc")}>Copy</button>
+                </div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+                <button className="abtn" onClick={() => setLinkEvent(null)}>Đóng</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Danh sách sự kiện */}
         {events.length === 0 ? (
           <p className="muted">Chưa có sự kiện nào. Bấm "+ Thêm sự kiện" để tạo.</p>
@@ -1252,6 +1328,7 @@ function AdminEditorInner({ initial, initialSite }: { initial: SiteContent; init
                     <span className="ev-toggle-label">{ev.status === "published" ? "Bật" : "Tắt"}</span>
                   </button>
                 )}
+                <button className="abtn" onClick={() => { setLinkEvent(ev); setLinkCampaign(slugify(ev.title) || `su-kien-${ev.id}`); }} style={{ fontSize: "0.82rem" }} title="Lấy link chạy quảng cáo (kèm UTM)">🔗 Link QC</button>
                 <button className="abtn" onClick={() => setEditingEvent(ev)} style={{ fontSize: "0.82rem" }}>Sửa</button>
                 <button className="abtn" onClick={() => deleteEvent(ev.id)} style={{ fontSize: "0.82rem", color: "#dc3545" }}>Xóa</button>
               </div>

@@ -470,3 +470,17 @@
 .site-bar-hint { font-size: 0.8rem; margin-left: auto; }
 .admin.dark .site-bar { background: #2a2f22; border-color: #3c452c; }
 .admin.dark .site-bar-select, .admin.dark .site-bar-add input { background: #1f2418; color: #e8ead9; border-color: #3c452c; }
+
+/* ===== Popup link quảng cáo (UTM) ===== */
+.link-copy-list { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.4rem; }
+.link-copy-row { display: flex; align-items: center; gap: 0.5rem; }
+.link-copy-name { flex: 0 0 92px; font-weight: 700; font-size: 0.86rem; white-space: nowrap; }
+.link-copy-input {
+  flex: 1; min-width: 0; padding: 0.45rem 0.6rem; border: 1px solid #ddd; border-radius: 8px;
+  font-family: inherit; font-size: 0.8rem; background: #fbfaf7; color: #39402c;
+}
+.admin.dark .link-copy-input { background: #1f2418; color: #e8ead9; border-color: #3c452c; }
+@media (max-width: 560px) {
+  .link-copy-row { flex-wrap: wrap; }
+  .link-copy-name { flex-basis: 100%; }
+}
