@@ -141,20 +141,47 @@ export default async function Home() {
   const tel = `tel:${c.contact.phone.replace(/\s/g, "")}`;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-  // Sự kiện: sắp tới (tất cả đang bật) + đã diễn ra (lịch sử, tối đa 6)
+  // Sự kiện: lấy tất cả published, phân loại theo date + endDate
   const now = new Date();
   const site = currentSite();
-  const [upcomingEvents, pastEvents] = await Promise.all([
-    prisma.event.findMany({
-      where: { site, status: "published", date: { gte: now } },
-      orderBy: { date: "asc" },
-    }),
-    prisma.event.findMany({
-      where: { site, status: "published", date: { lt: now } },
-      orderBy: { date: "desc" },
-      take: 6,
-    }),
-  ]);
+  const allEvents = await prisma.event.findMany({
+    where: { site, status: "published" },
+    orderBy: { date: "asc" },
+  });
+
+  // Phân loại: upcoming (chưa bắt đầu) + ongoing (đang diễn ra) = hiện tại; past = đã kết thúc
+  const activeEvents: typeof allEvents = []; // ongoing + upcoming
+  const pastEvents: typeof allEvents = [];
+
+  for (const ev of allEvents) {
+    const start = new Date(ev.date);
+    const end = ev.endDate ? new Date(ev.endDate) : null;
+
+    if (start > now) {
+      activeEvents.push(ev); // Chưa bắt đầu → Sắp tới
+    } else if (end) {
+      if (end > now) {
+        activeEvents.push(ev); // Đang diễn ra
+      } else {
+        pastEvents.push(ev); // Đã kết thúc
+      }
+    } else {
+      // Không có endDate → sự kiện 1 ngày
+      const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+      const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      if (startDay.getTime() === todayDay.getTime()) {
+        activeEvents.push(ev); // Đang diễn ra trong ngày
+      } else {
+        pastEvents.push(ev);
+      }
+    }
+  }
+
+  // Sắp xếp: active theo ngày tăng dần, past theo ngày giảm dần (lấy tối đa 6)
+  activeEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  pastEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const upcomingEvents = activeEvents;
+  const limitedPastEvents = pastEvents.slice(0, 6);
 
   const fmtEventDate = (d: Date) =>
     d.toLocaleDateString("vi-VN", { day: "2-digit", month: "long", year: "numeric" });
@@ -164,14 +191,16 @@ export default async function Home() {
     title: ev.title,
     description: ev.description,
     image: ev.image,
-    dateLabel: fmtEventDate(ev.date),
+    dateLabel: fmtEventDate(ev.date) + (ev.endDate ? ` — ${fmtEventDate(ev.endDate)}` : ""),
     dateISO: ev.date.toISOString(),
+    endDateISO: ev.endDate ? ev.endDate.toISOString() : null,
     location: ev.location,
+    locations: ev.locations,
     ctaText: ev.ctaText,
     ctaLink: ev.ctaLink,
   }));
 
-  const pastCards = pastEvents.map((ev) => ({
+  const pastCards = limitedPastEvents.map((ev) => ({
     id: ev.id,
     title: ev.title,
     image: ev.image,
@@ -180,9 +209,14 @@ export default async function Home() {
     location: ev.location,
   }));
 
-  // Sự kiện nổi bật = sự kiện sắp tới gần nhất; còn lại đưa vào carousel
+  // Sự kiện nổi bật = sự kiện active gần nhất (đang diễn ra hoặc sắp tới)
   const featuredEvent = upcomingCards[0];
   const restUpcoming = upcomingCards.slice(1);
+
+  // Kiểm tra xem featured event đang diễn ra hay sắp tới
+  const featuredIsOngoing = featuredEvent
+    ? new Date(featuredEvent.dateISO).getTime() <= now.getTime()
+    : false;
 
   return (
     <>
@@ -345,8 +379,8 @@ export default async function Home() {
           <span className="ev-deco ev-deco-2" aria-hidden="true">🎉</span>
           <div className="wrap">
             <div className="head reveal">
-              <span className="kicker">Sự kiện sắp tới</span>
-              <h2>Đừng bỏ lỡ các hoạt động hấp dẫn 🎉</h2>
+              <span className="kicker">{featuredIsOngoing ? "Đang diễn ra" : "Sự kiện sắp tới"}</span>
+              <h2>{featuredIsOngoing ? "Sự kiện đang diễn ra — tham gia ngay! 🔴" : "Đừng bỏ lỡ các hoạt động hấp dẫn 🎉"}</h2>
             </div>
             <FeaturedEvent event={featuredEvent} />
             {restUpcoming.length > 0 && (

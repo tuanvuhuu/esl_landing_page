@@ -47,6 +47,7 @@ model Event {
   date        DateTime
   endDate     DateTime?
   location    String    @default("")
+  locations   String    @default("[]") // JSON array: [{name, mapUrl}]
   ctaText     String    @default("Đăng ký tham gia")
   ctaLink     String    @default("#signup")
   images      String    @default("[]") // JSON array of additional image URLs

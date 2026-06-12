@@ -678,6 +678,19 @@ footer .logo .wm small { color: var(--orange-deep); }
   background: rgba(0,0,0,0.6); color: #fff; font-size: 0.75rem;
   padding: 0.25rem 0.7rem; border-radius: 20px; font-weight: 600;
 }
+.ev-badge-ongoing {
+  position: absolute; top: 0.7rem; right: 0.7rem;
+  background: linear-gradient(135deg, var(--green), var(--green-deep)); color: #fff;
+  font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 20px;
+  font-weight: 700; box-shadow: 0 2px 8px rgba(128,184,72,0.4);
+  animation: ongoing-pulse 2s ease-in-out infinite;
+}
+@keyframes ongoing-pulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(128,184,72,0.4); }
+  50% { box-shadow: 0 2px 16px rgba(128,184,72,0.7); }
+}
+.ev-ongoing { border-color: var(--green); border-width: 2px; }
+.ev-ongoing:hover { box-shadow: 0 8px 24px rgba(128,184,72,0.25); }
 .ev-body { padding: 1.2rem 1.4rem 1.4rem; }
 .ev-date { font-size: 0.82rem; color: var(--orange); font-weight: 700; margin-bottom: 0.3rem; }
 .ev-title { font-family: var(--font-quicksand); font-size: 1.15rem; font-weight: 700; color: var(--ink); margin: 0 0 0.4rem; }
@@ -707,8 +720,11 @@ footer .logo .wm small { color: var(--orange-deep); }
 /* Trang chi tiết sự kiện /su-kien/[id] */
 .ev-detail-page { padding: 2rem 0 5rem; min-height: 70vh; }
 .ev-detail-wrap { max-width: 780px; margin: 0 auto; }
-.ev-detail-img { position: relative; border-radius: 22px; overflow: hidden; margin-bottom: 2rem; aspect-ratio: 16/9; }
-.ev-detail-img img { width: 100%; height: 100%; object-fit: cover; }
+.ev-detail-img {
+  position: relative; border-radius: 22px; overflow: hidden; margin-bottom: 2rem;
+  max-width: 680px; margin-inline: auto; box-shadow: var(--shadow-sm);
+}
+.ev-detail-img img { width: 100%; height: auto; display: block; }
 .ev-detail-title { font-family: var(--font-quicksand); font-size: 2rem; font-weight: 800; color: var(--ink); margin: 0 0 0.6rem; line-height: 1.25; }
 .ev-detail-meta { font-size: 0.95rem; color: var(--muted); margin: 0 0 1.2rem; }
 .ev-detail-desc { color: var(--ink); font-size: 1rem; line-height: 1.75; margin: 1.4rem 0 2rem; }
@@ -718,6 +734,23 @@ footer .logo .wm small { color: var(--orange-deep); }
 .ev-detail-gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
 .ev-detail-gallery-item img:hover { transform: scale(1.04); }
 .ev-detail-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2rem; }
+
+/* Nhiều địa điểm + link bản đồ */
+.ev-detail-locations { margin: 0 0 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.ev-detail-loc {
+  display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+  font-size: 0.95rem; color: var(--muted);
+}
+.ev-map-link {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-size: 0.85rem; font-weight: 700; color: var(--orange);
+  padding: 0.25rem 0.7rem; border: 1.5px solid var(--orange);
+  border-radius: 999px; transition: all 0.2s ease; text-decoration: none;
+}
+.ev-map-link:hover {
+  background: var(--orange); color: #fff;
+  transform: translateY(-1px); box-shadow: 0 3px 10px rgba(245,130,32,0.25);
+}
 /* Thẻ sự kiện có thể click */
 .ev-card-link { display: block; text-decoration: none; color: inherit; border-radius: 18px; }
 .ev-card-link:hover .ev-card { transform: translateY(-4px); box-shadow: var(--shadow); }
@@ -869,12 +902,50 @@ section[id] { scroll-margin-top: 92px; }
 .fe-media-fallback { width: 100%; height: 100%; min-height: 320px; display: grid; place-items: center; font-size: 5rem; background: var(--green-soft); }
 .fe-tag { position: absolute; top: 1rem; left: 1rem; background: #fff; color: var(--green-deep); font-family: var(--font-quicksand); font-weight: 700; font-size: 0.8rem; padding: 0.4rem 0.9rem; border-radius: 999px; box-shadow: var(--shadow-sm); }
 .fe-body { padding: 2rem 2.2rem; color: #fff; display: flex; flex-direction: column; justify-content: center; }
-.fe-meta { font-weight: 700; font-size: 0.9rem; opacity: 0.92; margin-bottom: 0.5rem; }
+.fe-meta {
+  display: flex; flex-direction: column; gap: 0.45rem;
+  font-weight: 700; font-size: 0.88rem; opacity: 0.95; margin-bottom: 0.8rem;
+}
+.fe-meta-date { margin-bottom: 0.2rem; font-size: 0.92rem; }
+.fe-meta-loc { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; line-height: 1.45; }
+.fe-meta-map-link {
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  font-size: 0.72rem; font-weight: 800; color: #fff;
+  background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.15rem 0.55rem; border-radius: 999px; text-decoration: none;
+  transition: all 0.15s ease;
+}
+.fe-meta-map-link:hover {
+  background: rgba(255, 255, 255, 0.35); transform: translateY(-0.5px);
+}
 .fe-title { font-size: clamp(1.4rem, 3vw, 2rem); margin-bottom: 0.6rem; }
 .fe-desc { opacity: 0.95; font-size: 0.98rem; line-height: 1.6; margin-bottom: 1.2rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .fe-count { margin-bottom: 1.4rem; }
 .fe-count-label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; opacity: 0.95; }
 .fe-cta { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+
+/* Title link trong banner featured event */
+.fe-title a { color: inherit; text-decoration: none; transition: opacity 0.15s; }
+.fe-title a:hover { opacity: 0.85; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Trạng thái "Đang diễn ra" — nổi bật hơn (dùng đúng màu xanh thương hiệu) */
+.fe-ongoing {
+  background: linear-gradient(135deg, var(--green-deep), var(--green), var(--green-lime));
+  box-shadow: 0 8px 32px -4px rgba(128, 184, 72, 0.35), var(--shadow);
+  animation: fe-glow 3s ease-in-out infinite;
+}
+@keyframes fe-glow {
+  0%, 100% { box-shadow: 0 8px 32px -4px rgba(128, 184, 72, 0.35), var(--shadow); }
+  50% { box-shadow: 0 8px 40px -4px rgba(128, 184, 72, 0.55), var(--shadow); }
+}
+.fe-ongoing .fe-tag {
+  background: var(--green-deep); color: #fff;
+  animation: fe-tag-pulse 1.5s ease-in-out infinite;
+}
+@keyframes fe-tag-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
 @media (max-width: 860px) {
   .featured-event { grid-template-columns: 1fr; }
   .fe-media { min-height: 200px; }

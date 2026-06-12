@@ -28,6 +28,7 @@ type EventItem = {
   date: string;
   endDate: string | null;
   location: string;
+  locations: string; // JSON array: [{name, mapUrl}]
   ctaText: string;
   ctaLink: string;
   status: string;
@@ -35,7 +36,7 @@ type EventItem = {
 
 const EMPTY_EVENT: Omit<EventItem, "id"> = {
   title: "", description: "", image: "", images: "[]", date: "", endDate: null,
-  location: "", ctaText: "Đăng ký tham gia", ctaLink: "#signup", status: "draft",
+  location: "", locations: "[]", ctaText: "Đăng ký tham gia", ctaLink: "#signup", status: "draft",
 };
 
 const STATUSES: { value: string; label: string }[] = [
@@ -1196,8 +1197,57 @@ function AdminEditorInner({ initial, initialSite }: { initial: SiteContent; init
                 </div>
               </div>
               <div className="afield">
-                <label>Địa điểm</label>
-                <input value={editingEvent.location} onChange={(e) => setEditingEvent({ ...editingEvent, location: e.target.value })} placeholder="VD: 123 Đường ABC, Quận 1" />
+                <label>Địa điểm tổ chức</label>
+                <small style={{ color: "var(--muted)", display: "block", marginBottom: 8 }}>Thêm nhiều địa điểm nếu sự kiện diễn ra ở nhiều cơ sở. Gắn link Google Maps để khách dễ tìm đường.</small>
+                {(() => {
+                  const locs: {name: string; mapUrl: string}[] = (() => {
+                    try { return JSON.parse(editingEvent.locations || "[]"); } catch { return []; }
+                  })();
+                  // Nếu chưa có locations mà có location cũ → migrate
+                  if (locs.length === 0 && editingEvent.location) {
+                    return (
+                      <>
+                        <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end", marginBottom: "0.5rem" }}>
+                          <div style={{ flex: 1 }}>
+                            <input value={editingEvent.location} onChange={(e) => setEditingEvent({ ...editingEvent, location: e.target.value })} placeholder="Tên địa điểm" />
+                          </div>
+                          <button className="abtn abtn-add" onClick={() => {
+                            const newLocs = [{name: editingEvent.location, mapUrl: ""}];
+                            setEditingEvent({ ...editingEvent, locations: JSON.stringify(newLocs), location: editingEvent.location });
+                          }}>＋ Thêm Maps</button>
+                        </div>
+                      </>
+                    );
+                  }
+                  return (
+                    <>
+                      {locs.map((loc, idx) => (
+                        <div key={idx} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", marginBottom: "0.6rem", padding: "0.6rem", background: "rgba(0,0,0,0.02)", borderRadius: 10, border: "1px solid #e8e6df" }}>
+                          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                            <input value={loc.name} onChange={(e) => {
+                              const next = [...locs]; next[idx] = { ...next[idx], name: e.target.value };
+                              const mainLoc = next.map(l => l.name).filter(Boolean).join(" · ");
+                              setEditingEvent({ ...editingEvent, locations: JSON.stringify(next), location: mainLoc });
+                            }} placeholder="📍 Tên địa điểm (VD: Cơ sở Quận 1)" />
+                            <input value={loc.mapUrl} onChange={(e) => {
+                              const next = [...locs]; next[idx] = { ...next[idx], mapUrl: e.target.value };
+                              setEditingEvent({ ...editingEvent, locations: JSON.stringify(next) });
+                            }} placeholder="🗺️ Link Google Maps (tùy chọn)" style={{ fontSize: "0.85rem" }} />
+                          </div>
+                          <button className="abtn abtn-del" onClick={() => {
+                            const next = locs.filter((_, i) => i !== idx);
+                            const mainLoc = next.map(l => l.name).filter(Boolean).join(" · ");
+                            setEditingEvent({ ...editingEvent, locations: JSON.stringify(next), location: mainLoc });
+                          }} title="Xóa" style={{ marginTop: 4 }}>✕</button>
+                        </div>
+                      ))}
+                      <button className="abtn abtn-add" onClick={() => {
+                        const next = [...locs, {name: "", mapUrl: ""}];
+                        setEditingEvent({ ...editingEvent, locations: JSON.stringify(next) });
+                      }}>＋ Thêm địa điểm</button>
+                    </>
+                  );
+                })()}
               </div>
               <div className="row2">
                 <div className="afield">

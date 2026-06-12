@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
   }
   const body = await req.json();
-  const { title, description, image, date, endDate, location, ctaText, ctaLink, status } = body;
+  const { title, description, image, date, endDate, location, locations, ctaText, ctaLink, status } = body;
 
   if (!title || !date) {
     return NextResponse.json({ error: "Thiếu tiêu đề hoặc ngày" }, { status: 400 });
@@ -63,6 +63,7 @@ export async function POST(req: Request) {
       date: new Date(date),
       endDate: endDate ? new Date(endDate) : null,
       location: String(location ?? ""),
+      locations: String(locations ?? "[]"),
       ctaText: String(ctaText || "Đăng ký tham gia"),
       ctaLink: String(ctaLink || "#signup"),
       status: String(status || "draft"),
@@ -90,6 +91,7 @@ export async function PUT(req: Request) {
   if (data.date !== undefined) updateData.date = new Date(data.date);
   if (data.endDate !== undefined) updateData.endDate = data.endDate ? new Date(data.endDate) : null;
   if (data.location !== undefined) updateData.location = String(data.location);
+  if (data.locations !== undefined) updateData.locations = String(data.locations);
   if (data.ctaText !== undefined) updateData.ctaText = String(data.ctaText);
   if (data.ctaLink !== undefined) updateData.ctaLink = String(data.ctaLink);
   if (data.images !== undefined) updateData.images = String(data.images);
