@@ -31,11 +31,13 @@ type EventItem = {
   ctaText: string;
   ctaLink: string;
   status: string;
+  template: string;
 };
 
 const EMPTY_EVENT: Omit<EventItem, "id"> = {
   title: "", description: "", image: "", images: "[]", date: "", endDate: null,
   location: "", ctaText: "Đăng ký tham gia", ctaLink: "#signup", status: "draft",
+  template: "default",
 };
 
 const STATUSES: { value: string; label: string }[] = [
@@ -1236,13 +1238,28 @@ function AdminEditorInner({ initial, initialSite }: { initial: SiteContent; init
                   <input value={editingEvent.ctaLink} onChange={(e) => setEditingEvent({ ...editingEvent, ctaLink: e.target.value })} placeholder="#signup hoặc https://forms.gle/..." />
                 </div>
               </div>
-              <div className="afield">
-                <label>Trạng thái</label>
-                <select value={editingEvent.status} onChange={(e) => setEditingEvent({ ...editingEvent, status: e.target.value })}>
-                  <option value="draft">Bản nháp</option>
-                  <option value="published">Đã xuất bản</option>
-                  <option value="cancelled">Đã huỷ</option>
-                </select>
+              <div className="row2">
+                <div className="afield">
+                  <label>Trạng thái</label>
+                  <select value={editingEvent.status} onChange={(e) => setEditingEvent({ ...editingEvent, status: e.target.value })}>
+                    <option value="draft">Bản nháp</option>
+                    <option value="published">Đã xuất bản</option>
+                    <option value="cancelled">Đã huỷ</option>
+                  </select>
+                </div>
+                <div className="afield">
+                  <label>Mẫu trang (template)</label>
+                  <select
+                    value={editingEvent.template || "default"}
+                    onChange={(e) => setEditingEvent({ ...editingEvent, template: e.target.value })}
+                  >
+                    <option value="default">Mặc định — Sự kiện thường</option>
+                    <option value="campaign">Chiến dịch — Landing page chạy ads</option>
+                  </select>
+                  <small style={{ color: "var(--muted)" }}>
+                    Chọn &quot;Chiến dịch&quot; nếu sự kiện này dùng để chạy Facebook Ads (có hero ảnh lớn, ưu đãi, countdown).
+                  </small>
+                </div>
               </div>
               <div style={{ display: "flex", gap: "0.7rem", marginTop: "1rem" }}>
                 <button className="abtn abtn-primary" onClick={saveEvent} disabled={eventSaving}>

@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
   }
   const body = await req.json();
-  const { title, description, image, date, endDate, location, ctaText, ctaLink, status } = body;
+  const { title, description, image, date, endDate, location, ctaText, ctaLink, status, template } = body;
 
   if (!title || !date) {
     return NextResponse.json({ error: "Thiếu tiêu đề hoặc ngày" }, { status: 400 });
@@ -66,6 +66,7 @@ export async function POST(req: Request) {
       ctaText: String(ctaText || "Đăng ký tham gia"),
       ctaLink: String(ctaLink || "#signup"),
       status: String(status || "draft"),
+      template: String(template || "default"),
     },
   });
 
@@ -94,6 +95,7 @@ export async function PUT(req: Request) {
   if (data.ctaLink !== undefined) updateData.ctaLink = String(data.ctaLink);
   if (data.images !== undefined) updateData.images = String(data.images);
   if (data.status !== undefined) updateData.status = String(data.status);
+  if (data.template !== undefined) updateData.template = String(data.template);
 
   const event = await prisma.event.update({
     where: { id: Number(id) },

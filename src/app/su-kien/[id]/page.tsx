@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ContactLink, ContactButtons } from "../../Contact";
 import LeadForm from "../../LeadForm";
 import Gallery from "@/components/Gallery";
+import CampaignTemplate from "@/components/CampaignTemplate";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,26 @@ export default async function EventDetailPage({ params }: Props) {
   ]);
 
   if (!ev || ev.status !== "published") notFound();
+
+  // Sự kiện được đánh dấu là chiến dịch → render layout landing page chạy ads.
+  if ((ev as { template?: string }).template === "campaign") {
+    return (
+      <CampaignTemplate
+        event={{
+          id: ev.id,
+          title: ev.title,
+          description: ev.description,
+          image: ev.image,
+          images: ev.images,
+          date: ev.date,
+          endDate: ev.endDate,
+          location: ev.location,
+          ctaText: ev.ctaText,
+        }}
+        siteContent={c}
+      />
+    );
+  }
 
   const tel = `tel:${c.contact.phone.replace(/\s/g, "")}`;
   const isPast = ev.date < new Date();
